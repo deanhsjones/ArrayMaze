@@ -124,6 +124,13 @@ void UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width, b
         level[index] = ' ';
         playerX = newPlayerX;
         playerY = newPlayerY;
+    }
+    else if (level[index] == 'D' && playerHasKey)
+    {
+        level[index] = ' ';
+        playerHasKey = false;
+        playerX = newPlayerX;
+        playerY = newPlayerY;
     };
     
 }
