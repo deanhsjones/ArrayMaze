@@ -9,7 +9,7 @@ const char kPlayerSymbol = '@';
 
 int GetIndexFromCoordinates(int X, int y, int width);
 void DrawLevel(char level[], int width, int height, int playerX, int playerY);
-void UpdatePlayerPosition(int& playerX, int& playerY);
+void UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width);
 
 int main()
 {
@@ -39,7 +39,7 @@ int main()
     {
         system("cls");
         DrawLevel(levelArray, kWidth, kHeight, playerX, playerY);
-        UpdatePlayerPosition(playerX, playerY);
+        UpdatePlayerPosition(levelArray, playerX, playerY, kWidth);
     }
 
 
@@ -72,38 +72,49 @@ void DrawLevel(char level[], int width, int height, int playerX, int playerY)
     }
 }
 
-void UpdatePlayerPosition(int& playerX, int& playerY)
+void UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width)
 {
     char input = _getch();
+
+    int newPlayerX = playerX;
+    int newPlayerY = playerY;
+
 
     switch (input)
     {
     case 'w':
     case 'W':
     {
-        playerY--;
+        newPlayerY--;
         break;
     }
     case 's':
     case 'S':
     {
-        playerY++;
+        newPlayerY++;
         break;
     }
     case 'a':
     case 'A':
     {
-        playerX--;
+        newPlayerX--;
         break;
     }
     case 'd':
     case 'D':
     {
-        playerX++;
+        newPlayerX++;
         break;
     }
     default:
         break;
 
+    }
+
+    int index = GetIndexFromCoordinates(newPlayerX, newPlayerY, width);
+    if (level[index] == ' ')
+    {
+        playerX = newPlayerX;
+        playerY = newPlayerY;
     }
 }
