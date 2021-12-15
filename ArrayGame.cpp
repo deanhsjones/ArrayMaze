@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <conio.h>
+#include <Windows.h>
 
 using namespace std;
 const char kPlayerSymbol = '@';
@@ -16,6 +17,10 @@ constexpr char GOL = 36;
 int GetIndexFromCoordinates(int X, int y, int width);
 void DrawLevel(char level[], int width, int height, int playerX, int playerY);
 bool UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width, bool& playerHasKey);
+void PlayDoorClosedSound();
+void PlayDoorOpenedSound();
+void PlayKeyPickupSound();
+void PlayWinSound();
 
 int main()
 {
@@ -54,6 +59,7 @@ int main()
      system("cls");
      DrawLevel(levelArray, kWidth, kHeight, playerX, playerY);
      cout << "You Won!" << endl;
+     PlayWinSound();
 }
 
 int GetIndexFromCoordinates(int x, int y, int width)
@@ -133,6 +139,7 @@ bool UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width, b
         level[index] = ' ';
         playerX = newPlayerX;
         playerY = newPlayerY;
+        PlayKeyPickupSound();
     }
     else if (level[index] == DOR && playerHasKey)
     {
@@ -140,6 +147,11 @@ bool UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width, b
         playerHasKey = false;
         playerX = newPlayerX;
         playerY = newPlayerY;
+        PlayDoorOpenedSound();
+    }
+    else if (level[index] == DOR && !playerHasKey)
+    {
+        PlayDoorClosedSound();
     }
     else if (level[index] == GOL)
     {
@@ -150,4 +162,29 @@ bool UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width, b
     }
     return false;
     
+}
+
+void PlayDoorClosedSound()
+{
+    Beep(500, 75);
+    Beep(500, 75);
+}
+void PlayDoorOpenedSound()
+{
+    Beep(1397, 200);
+}
+void PlayKeyPickupSound()
+{
+    Beep(1568, 200);
+}
+void PlayWinSound()
+{
+    Beep(1568, 200);
+    Beep(1568, 200);
+    Beep(1568, 200);
+    Beep(1245, 1000);
+    Beep(1397, 200);
+    Beep(1397, 200);
+    Beep(1397, 200);
+    Beep(1175, 1000);
 }
