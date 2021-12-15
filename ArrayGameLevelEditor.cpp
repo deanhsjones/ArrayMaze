@@ -1,6 +1,13 @@
 
 #include <iostream>
+#include <conio.h>
+#include <windows.h>
+
+
 using namespace std;
+
+
+constexpr char kCursor = '_';
 
 constexpr char kTopRightBoarder = 187;
 constexpr char kTopLeftBoarder = 201;
@@ -9,14 +16,23 @@ constexpr char kBottomLeftBoarder = 200;
 constexpr char kHorizontalBoarder = 205;
 constexpr char kVerticalBoarder = 186;
 
+constexpr int kArrowInput = 224;
+constexpr int kLeftArrow = 75;
+constexpr int kRightArrow = 77;
+constexpr int kUpArrow = 72;
+constexpr int kDownArrow = 80;
+
+constexpr int kEscape = 27;
+
 void GetLevelDimensions(int& width, int& height);
-void DisplayLevel(char* pLevel, int width, int height);
+void DisplayLevel(char* pLevel, int width, int height, int cursorX, int cursorY);
 int GetIndexFromXY(int x, int y, int width);
 
 void DisplayTopBoarder(int width);
 void DisplayBottomBoarder(int width);
 void DisplayLeftBoarder();
 void DisplayRightBoarder();
+bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height);
 
 
 
@@ -34,7 +50,19 @@ int main()
         pLevel[i] = ' ';
     }
 
-    DisplayLevel(pLevel, levelWidth, levelHeight);
+    int cursorX = 0;
+    int cursorY = 0;
+    bool doneEditing = false;
+
+    while (!doneEditing) {
+
+        system("cls");
+        DisplayLevel(pLevel, levelWidth, levelHeight, cursorX, cursorY);
+        doneEditing = EditLevel(pLevel, cursorX, cursorY, levelWidth, levelHeight);
+    }
+
+    system("cls");
+    DisplayLevel(pLevel, levelWidth, levelHeight, -1, -1);
 
     delete[] pLevel;
     pLevel = nullptr;
@@ -52,7 +80,7 @@ void GetLevelDimensions(int& width, int& height)
     cin >> height;
 }
 
-void DisplayLevel(char* pLevel, int width, int height)
+void DisplayLevel(char* pLevel, int width, int height, int cursorX, int cursorY)
 {
     DisplayTopBoarder(width);
 
@@ -62,8 +90,16 @@ void DisplayLevel(char* pLevel, int width, int height)
 
         for (int x = 0; x < width; x++)
         {
-            int i = GetIndexFromXY(x, y, width);
-            cout << pLevel[i];
+            if (cursorX == x && cursorY == y)
+            {
+                cout << kCursor;
+            }
+            else
+            {
+            int index = GetIndexFromXY(x, y, width);
+            cout << pLevel[index];
+
+            }
 
         }
 
@@ -106,4 +142,67 @@ void DisplayLeftBoarder()
 void DisplayRightBoarder()
 {
     cout << kVerticalBoarder << endl;
+}
+
+bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height)
+{
+    int newCursorX = cursorX;
+    int newCursorY = cursorY;
+
+    int intInput = _getch();
+
+    if (intInput == kArrowInput)
+    {
+        int arrowInput = _getch();
+
+        switch (arrowInput)
+        {
+        case kLeftArrow:
+        newCursorX--;
+        break;
+
+
+        case kRightArrow:
+        newCursorX++;
+        break;
+
+        case kUpArrow:
+        newCursorY--;
+        break;
+
+        case kDownArrow:
+        newCursorY++;
+        break;
+
+        default: break;
+        }
+
+        if (newCursorX < 0)
+            newCursorX = 0;
+        
+        else if(newCursorX == width)
+            newCursorX = width - 1;
+
+        if (newCursorY < 0)
+            newCursorY = 0;
+
+        else if (newCursorY == height)
+            newCursorY = height - 1;
+
+        cursorX = newCursorX;
+        cursorY = newCursorY;
+    }
+    else
+    {
+        if (intInput == kEscape)
+        {
+            return true;
+        }
+        else
+        {
+            int index = GetIndexFromXY(newCursorX, newCursorY, width);
+            pLevel[index] = (char)intInput;
+        }
+    }
+    return false;
 }
