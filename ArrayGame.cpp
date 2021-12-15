@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <conio.h>
-#include <Windows.h>
+#include <windows.h>
 
 using namespace std;
 const char kPlayerSymbol = '@';
@@ -11,11 +11,14 @@ constexpr char WAL = 219;
 constexpr char KEY = 232;
 constexpr char DOR = 179;
 constexpr char GOL = 36;
+constexpr int kOpenDoorColor = 10;
+constexpr int kClosedDoorColor = 12;
+constexpr int kRegularColor = 7;
 
 
 
 int GetIndexFromCoordinates(int X, int y, int width);
-void DrawLevel(char level[], int width, int height, int playerX, int playerY);
+void DrawLevel(char level[], int width, int height, int playerX, int playerY, bool playerHasKey);
 bool UpdatePlayerPosition(char level[], int& playerX, int& playerY, int width, bool& playerHasKey);
 void PlayDoorClosedSound();
 void PlayDoorOpenedSound();
@@ -52,12 +55,12 @@ int main()
     while (!gameOver)
     {
         system("cls");
-        DrawLevel(levelArray, kWidth, kHeight, playerX, playerY);
+        DrawLevel(levelArray, kWidth, kHeight, playerX, playerY, playerHasKey);
         gameOver = UpdatePlayerPosition(levelArray, playerX, playerY, kWidth, playerHasKey);
 
     }
      system("cls");
-     DrawLevel(levelArray, kWidth, kHeight, playerX, playerY);
+     DrawLevel(levelArray, kWidth, kHeight, playerX, playerY, playerHasKey);
      cout << "You Won!" << endl;
      PlayWinSound();
 }
@@ -67,7 +70,7 @@ int GetIndexFromCoordinates(int x, int y, int width)
     return x + y * width;
 }
 
-void DrawLevel(char level[], int width, int height, int playerX, int playerY)
+void DrawLevel(char level[], int width, int height, int playerX, int playerY, bool playerHasKey)
 {
     for (int y = 0; y < height; y++)
     {
@@ -79,8 +82,24 @@ void DrawLevel(char level[], int width, int height, int playerX, int playerY)
             }
             else
             {
-            int index = GetIndexFromCoordinates(x, y, width);
-            cout << level[index];
+            int indexToPrint = GetIndexFromCoordinates(x, y, width);
+            HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+            if (level[indexToPrint] == DOR)
+            {
+                if (playerHasKey)
+                {
+                    SetConsoleTextAttribute(console, kOpenDoorColor);
+                }
+                else
+                {
+                    SetConsoleTextAttribute(console, kClosedDoorColor);
+                }
+            }
+            else
+            {
+                SetConsoleTextAttribute(console, kRegularColor);
+            }
+            cout << level[indexToPrint];
 
             }
         }
