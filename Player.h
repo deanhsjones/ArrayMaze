@@ -13,6 +13,9 @@ public:
 	int GetXPosition() { return m_position.x; }
 	int GetYPosition() { return m_position.y; }
 
+	int* GetXPositionPointer() { return &(m_position.x); }
+	int* GetYPositionPointer() { return &(m_position.y); }
+
 	void SetPosition(int X, int y);
 
 	bool HasKey();
