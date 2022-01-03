@@ -82,12 +82,12 @@ bool Level::IsGoal(int x, int y)
 
 void Level::PickupKey(int x, int y)
 {
-    m_pLevelData[GetIndexFromCoordinates(x, y)] == ' ';
+    m_pLevelData[GetIndexFromCoordinates(x, y)] = ' ';
 }
 
 void Level::OpenDoor(int x, int y)
 {
-    m_pLevelData[GetIndexFromCoordinates(x, y)] == ' ';
+    m_pLevelData[GetIndexFromCoordinates(x, y)] = ' ';
 }
 
 
@@ -139,5 +139,5 @@ bool Level::Convert(int* playerX, int* playerY)
 }
 int Level::GetIndexFromCoordinates(int x, int y)
 {
-    return x + y * width;
+    return x + y * m_width;
 }

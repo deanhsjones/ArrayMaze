@@ -2,8 +2,10 @@
 #include <iostream>
 using namespace std;
 
+const char kPlayerSymbol = '@';
+
 Player::Player()
-	: M_hasKey(false)
+	: m_hasKey(false)
 {
 
 }
@@ -13,7 +15,7 @@ Player::~Player()
 }
 
 
-void Player::SetPosition(int X, int y)
+void Player::SetPosition(int x, int y)
 {
 	m_position.x = x;
 	m_position.y = y;

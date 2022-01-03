@@ -23,6 +23,6 @@ private:
 
 
 	bool Update();
-	bool Draw();
+	void Draw();
 
 };
