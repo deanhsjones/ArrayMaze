@@ -2,6 +2,7 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <fstream>
 
 
 using namespace std;
@@ -23,6 +24,9 @@ constexpr int kUpArrow = 72;
 constexpr int kDownArrow = 80;
 
 constexpr int kEscape = 27;
+constexpr int kBackspace = 8;
+
+
 
 void GetLevelDimensions(int& width, int& height);
 void DisplayLevel(char* pLevel, int width, int height, int cursorX, int cursorY);
@@ -33,6 +37,8 @@ void DisplayBottomBoarder(int width);
 void DisplayLeftBoarder();
 void DisplayRightBoarder();
 bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height);
+void SaveLevel(char* pLevel, int width, int height);
+void DisplayLegend();
 
 
 
@@ -58,11 +64,15 @@ int main()
 
         system("cls");
         DisplayLevel(pLevel, levelWidth, levelHeight, cursorX, cursorY);
+        DisplayLegend();
         doneEditing = EditLevel(pLevel, cursorX, cursorY, levelWidth, levelHeight);
     }
 
     system("cls");
     DisplayLevel(pLevel, levelWidth, levelHeight, -1, -1);
+    DisplayLegend();
+
+    SaveLevel(pLevel, levelWidth, levelHeight);
 
     delete[] pLevel;
     pLevel = nullptr;
@@ -70,6 +80,21 @@ int main()
 
     return 0;
 
+}
+
+void DisplayLegend()
+{
+    cout << "Arrows to move cursor" << endl;
+    cout << "ESC to finish editing" << endl;
+    cout << "+ | - for walls" << endl;
+    cout << "@ for player start" << endl;
+    cout << "r g b for key" << endl;
+    cout << "R G B for door" << endl;
+    cout << "$ for money" << endl;
+    cout << "v for vertical moving enemy" << endl;
+    cout << "h for horizontal moving enemy" << endl;
+    cout << "e for non-moving enemy" << endl;
+    cout << "X for end" << endl;
 }
 
 void GetLevelDimensions(int& width, int& height)
@@ -198,6 +223,10 @@ bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height)
         {
             return true;
         }
+        else if(intInput == kBackspace)
+        {
+            //ignore
+        }
         else
         {
             int index = GetIndexFromXY(newCursorX, newCursorY, width);
@@ -205,4 +234,32 @@ bool EditLevel(char* pLevel, int& cursorX, int& cursorY, int width, int height)
         }
     }
     return false;
+}
+
+
+void SaveLevel(char* pLevel, int width, int height)
+{
+    cout << "Pick a name for your level file (eg Level1.txt): ";
+    string levelName;
+    cin >> levelName;
+
+    levelName.insert(0, "../");
+
+    ofstream levelFile;
+    levelFile.open(levelName);
+    if (!levelFile)
+    {
+        cout << "Opening file failed!" << endl;
+    }
+    else
+    {
+        levelFile << width << endl;
+        levelFile << height << endl;
+        levelFile.write(pLevel, width * height);
+        if(!levelFile)
+        {
+            cout << "Write failed!" << endl;
+        }
+        levelFile.close();
+    }
 }
