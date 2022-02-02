@@ -1,18 +1,24 @@
 #pragma once
 #include "Point.h"
 
-constexpr int kGreenColor = 10;
-constexpr int kGreenColorSolid = 34;
-constexpr int kRedColor = 12;
-constexpr int kRedColorSolid = 12;
-constexpr int kBlueColor = 9;
-constexpr int kBlueColorSolid = 153;
-constexpr int kRegularColor = 7;
+
+
+enum class ActorColor
+{
+	Regular = 7,
+	Blue = 9,
+	Green = 10,
+	Red = 12,
+	SolidGreen = 34,
+	SolidRed = 68,
+	SolidBlue = 153,
+};
+
 
 class PlaceableActor
 {
 public:
-	PlaceableActor(int x, int y, int color = kRegularColor);
+	PlaceableActor(int x, int y, ActorColor color = ActorColor::Regular);
 	virtual ~PlaceableActor();
 
 	int GetXPosition();
@@ -21,7 +27,7 @@ public:
 	int* GetYPositionPointer();
 	void SetPosition(int x, int y);
 
-	int GetColor() { return m_color; }
+	ActorColor GetColor() { return m_color; }
 
 	void Remove() { m_IsActive = false; }
 	bool IsActive() { return m_IsActive; }
@@ -37,7 +43,7 @@ protected:
 	Point* m_pPosition;
 
 	bool m_IsActive;
-	int m_color;
+	ActorColor m_color;
 
 
 

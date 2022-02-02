@@ -4,7 +4,7 @@
 class Door : public PlaceableActor
 {
 public:
-	Door(int x, int y, int color, int closedColor);
+	Door(int x, int y, ActorColor color, ActorColor closedColor);
 	virtual void Draw() override;
 
 	bool IsOpen() { return m_isOpen; }
@@ -12,6 +12,6 @@ public:
 
 private:
 	bool m_isOpen;
-	int m_closedColor;
+	ActorColor m_closedColor;
 };
 
