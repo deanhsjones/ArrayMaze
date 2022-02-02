@@ -14,6 +14,16 @@ enum class ActorColor
 	SolidBlue = 153,
 };
 
+enum class ActorType
+{
+	Door, 
+	Enemy, 
+	Goal, 
+	Key, 
+	Money, 
+	Player
+};
+
 
 class PlaceableActor
 {
@@ -33,6 +43,8 @@ public:
 	bool IsActive() { return m_IsActive; }
 	void Place(int x, int y);
 
+
+	virtual ActorType GetType() = 0;
 	virtual void Draw() = 0;
 	virtual void Update()
 	{
