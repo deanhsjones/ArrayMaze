@@ -1,0 +1,54 @@
+#include "PlaceableActor.h"
+
+//constructor(x, y, optional color argument)
+
+PlaceableActor::PlaceableActor(int x, int y, int color)
+	: m_pPosition(new Point(x, y))
+	, m_IsActive(true)
+	, m_color(color)
+
+{
+
+}
+
+//Destructor
+
+PlaceableActor::~PlaceableActor()
+{
+	delete m_pPosition;
+	m_pPosition = nullptr;
+}
+
+
+int PlaceableActor::GetXPosition()
+{
+	return m_pPosition->x;
+}
+
+int PlaceableActor::GetYPosition()
+{
+	return m_pPosition->y;
+}
+
+int* PlaceableActor::GetXPositionPointer()
+{
+	return &(m_pPosition->x);
+}
+
+int* PlaceableActor::GetYPositionPointer()
+{
+	return &(m_pPosition->y);
+}
+
+void PlaceableActor::SetPosition(int x, int y)
+{
+	m_pPosition->x = x;
+	m_pPosition->y = y;
+}
+
+void PlaceableActor::Place(int x, int y)
+{
+	m_pPosition->x = x;
+	m_pPosition->y = y;
+	m_IsActive = true;
+}

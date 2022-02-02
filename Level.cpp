@@ -1,13 +1,22 @@
+#include <Windows.h>
 #include <iostream>
+#include <assert.h>
 #include <fstream>
+
 #include "Level.h"
+#include "Player.h"
+#include "Enemy.h"
+#include "Key.h"
+#include "Door.h"
+#include "Money.h"
+#include "Goal.h"
+
+
+
 
 using namespace std;
 
 	constexpr char WAL = (char)219;
-	constexpr char KEY = (char)232;
-	constexpr char DOR = (char)179;
-	constexpr char GOL = (char)36;
 
 Level::Level()
 	: m_pLevelData(nullptr)
@@ -23,6 +32,12 @@ Level::~Level()
 		delete[] m_pLevelData;
 		m_pLevelData = nullptr;
 	}
+
+    while (!m_pActors.empty())
+    {
+        delete m_pActors.back();
+        m_pActors.pop_back();
+    }
 }
 
 bool Level::Load(std::string levelName, int* playerX, int* playerY)
@@ -57,39 +72,50 @@ bool Level::Load(std::string levelName, int* playerX, int* playerY)
         return true;
     }
 }
-void Level::Draw(int x, int y)
+void Level::Draw()
 {
-    int index = GetIndexFromCoordinates(x, y);
-    cout << m_pLevelData[index];
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(console, kRegularColor);
+
+    //draw level
+    for (int y = 0; y < GetHeight(); ++y)
+    {
+        for (int x = 0; x < GetWidth(); ++x)
+        {
+            int indexToPrint = GetIndexFromCoordinates(x, y);
+            cout << m_pLevelData[indexToPrint];
+        }
+        cout << endl;
+
+    }
+    COORD actorCursorPosition;
+
+    //draw actors
+
+    for (auto actor = m_pActors.begin(); actor !=  m_pActors.end(); ++actor)
+    {
+        if ((*actor)->IsActive())
+        {
+
+        actorCursorPosition.X = (*actor)->GetXPosition();
+        actorCursorPosition.Y = (*actor)->GetYPosition();
+        SetConsoleCursorPosition(console, actorCursorPosition);
+        (*actor)->Draw();
+        }
+
+    }
+
 }
 
 bool Level::IsSpace(int x, int y)
 {
     return m_pLevelData[GetIndexFromCoordinates(x, y)] == ' ';
 }
-bool Level::IsKey(int x, int y)
-{ 
-    return m_pLevelData[GetIndexFromCoordinates(x, y)] == KEY;
-}
-bool Level::IsDoor(int x, int y)
-{ 
-    return m_pLevelData[GetIndexFromCoordinates(x, y)] == DOR;
-}
-bool Level::IsGoal(int x, int y)
-{
-    return m_pLevelData[GetIndexFromCoordinates(x, y)] == GOL;
-}
 
-void Level::PickupKey(int x, int y)
+bool Level::IsWall(int x, int y)
 {
-    m_pLevelData[GetIndexFromCoordinates(x, y)] = ' ';
+    return m_pLevelData[GetIndexFromCoordinates(x, y)] == WAL;
 }
-
-void Level::OpenDoor(int x, int y)
-{
-    m_pLevelData[GetIndexFromCoordinates(x, y)] = ' ';
-}
-
 
 
 bool Level::Convert(int* playerX, int* playerY)
@@ -108,15 +134,39 @@ bool Level::Convert(int* playerX, int* playerY)
             case '|':
                 m_pLevelData[index] = WAL;
                 break;
-            case '*':
-                m_pLevelData[index] = KEY;
+            case 'r':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Key(x, y, kRedColor));
                 break;
-            case 'D':
-                m_pLevelData[index] = DOR;
+            case 'g':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Key(x, y, kGreenColor));
+                break;
+            case 'b':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Key(x, y, kBlueColor));
+                break;
+            case 'R':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Door(x, y, kRedColorSolid, 16));
+                break;
+            case 'G':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Door(x, y, kGreenColorSolid, 16));
+                break;
+            case 'B':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Door(x, y, kBlueColorSolid, 16));
                 break;
             case 'X':
-                m_pLevelData[index] = GOL;
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Goal (x, y));
                 break;
+            case '$':
+                m_pLevelData[index] = ' ';
+                m_pActors.push_back(new Money(x, y, 1 + rand() % 5));
+                break;
+
             case '@':
                 m_pLevelData[index] = ' ';
                 if (playerX != nullptr && playerY != nullptr)
@@ -124,6 +174,18 @@ bool Level::Convert(int* playerX, int* playerY)
                 *playerX = x;
                 *playerY = y;
                 }
+                break;
+            case 'e':
+                m_pActors.push_back(new Enemy(x, y));
+                m_pLevelData[index] = ' '; //clear level
+                break;
+            case 'h':
+                m_pActors.push_back(new Enemy(x, y, 3, 0));
+                m_pLevelData[index] = ' '; //clear level
+                break;
+            case 'v':
+                m_pActors.push_back(new Enemy(x, y, 0, 2));
+                m_pLevelData[index] = ' '; //clear level
                 break;
             case ' ':
                 break;
@@ -140,4 +202,24 @@ bool Level::Convert(int* playerX, int* playerY)
 int Level::GetIndexFromCoordinates(int x, int y)
 {
     return x + y * m_width;
+}
+
+//  update all actors and return colliding actor
+
+PlaceableActor* Level::UpdateActors(int x, int y)
+{
+    PlaceableActor* collidedActor = nullptr;
+
+    for (auto actor = m_pActors.begin(); actor != m_pActors.end(); ++actor)
+    {
+        (*actor)->Update();
+
+        if (x == (*actor)->GetXPosition() && (*actor)->GetYPosition())
+        {
+            assert(collidedActor == nullptr);
+            collidedActor = (*actor);
+        }
+
+    }
+    return collidedActor;
 }

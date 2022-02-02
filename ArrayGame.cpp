@@ -1,5 +1,7 @@
 #include <iostream>
 #include "Game.h"
+#include "Sound.h"
+#include <windows.h>
 
 using namespace std;
 
@@ -13,10 +15,20 @@ int main()
         {
             myGame.Run();
         }
-        
-        cout << "You Won!" << endl;
 
-        //PlayWinSound();
+        if (myGame.DidUserQuit())
+        {
+            cout << "Thanks for playing!";
+        }
+
+        else if (myGame.GetPlayerLives() < 0)
+        {
+            cout << "You lose!" << endl;
+        }
+        else
+        {
+            cout << "You Won!" << endl;
+        }
 
     }
 
