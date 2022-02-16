@@ -2,6 +2,7 @@
 
 #include "Player.h"
 #include "Key.h"
+#include "AudioManager.h"
 
 using namespace std;
 
@@ -50,9 +51,13 @@ void Player::UseKey()
 }
 
 void Player::DropKey()
-{
-	m_pCurrentKey->Place(m_pPosition->x, m_pPosition->y);
-	m_pCurrentKey = nullptr;
+{	
+	if (m_pCurrentKey)
+	{
+		AudioManager::GetInstance()->PlayKeyDropSound();
+		m_pCurrentKey->Place(m_pPosition->x, m_pPosition->y);
+		m_pCurrentKey = nullptr;
+	}
 }
 
 void Player::Draw()

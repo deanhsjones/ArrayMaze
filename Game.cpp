@@ -1,7 +1,7 @@
 #include <conio.h>
 #include <iostream>
 #include "Game.h"
-#include "Sound.h"
+#include "AudioManager.h"
 #include <windows.h>
 #include <assert.h>
 
@@ -89,7 +89,9 @@ bool Game::Update()
     {
         m_player.DropKey();
     }
-    else if (newPlayerX == m_player.GetXPosition() && newPlayerY == m_player.GetYPosition())
+
+
+     if (newPlayerX == m_player.GetXPosition() && newPlayerY == m_player.GetYPosition())
     {
         return false;
     }
@@ -160,6 +162,7 @@ bool Game::HandleCollision(int newPlayerX, int newPlayerY)
         {
             Enemy* collidedEnemy = dynamic_cast<Enemy*>(collidedActor);
             assert(collidedEnemy);
+            AudioManager::GetInstance()->PlayLoseLivesSound();
 
             collidedEnemy->Remove();
             m_player.SetPosition(newPlayerX, newPlayerY);
@@ -182,7 +185,7 @@ bool Game::HandleCollision(int newPlayerX, int newPlayerY)
             collidedMoney->Remove();
             m_player.AddMoney(collidedMoney->GetWorth());
             m_player.SetPosition(newPlayerX, newPlayerY);
-
+            AudioManager::GetInstance()->PlayMoneySound();
             break;
         }
 
@@ -194,7 +197,7 @@ bool Game::HandleCollision(int newPlayerX, int newPlayerY)
             m_player.PickupKey(collidedKey);
             collidedKey->Remove();
             m_player.SetPosition(newPlayerX, newPlayerY);
-            //play key pickup sound()
+            AudioManager::GetInstance()->PlayKeyPickupSound();
 
             break;
         }
@@ -212,11 +215,11 @@ bool Game::HandleCollision(int newPlayerX, int newPlayerY)
                     collidedDoor->Remove();
                     m_player.UseKey();
                     m_player.SetPosition(newPlayerX, newPlayerY);
-                    //sound
+                    AudioManager::GetInstance()->PlayDoorOpenSound();
                 }
                 else
                 {
-                    //closed sound
+                    AudioManager::GetInstance()->PlayDoorClosedSound();
                 }
 
             }
