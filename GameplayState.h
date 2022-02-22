@@ -14,7 +14,7 @@ class GameplayState :
 	Player m_player;
 	Level m_level;
 	bool m_beatGame;
-	int m_skipFrameCount;
+	int m_skipFrameCount = 0;
 	static constexpr int kFramesToSkip = 2;
 
 public:
@@ -25,7 +25,7 @@ public:
 
 private:
 	bool Load();
-	bool HandleCollision(int newPlayerX, int newPlayerY);
+	void HandleCollision(int newPlayerX, int newPlayerY);
 
 	
 };

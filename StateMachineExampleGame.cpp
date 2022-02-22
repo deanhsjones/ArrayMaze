@@ -49,7 +49,7 @@ bool StateMachineExampleGame::Init()
 	 m_pCurrentState = pNewState; //set thew new state
 	 pNewState->Enter();	//and enter it
 }
- bool StateMachineExampleGame::Cleanup()
+ void StateMachineExampleGame::Cleanup()
 {
 	 if (m_pCurrentState)
 	 {
@@ -57,7 +57,6 @@ bool StateMachineExampleGame::Init()
 		 delete m_pCurrentState;
 	 }
 
-	 return true;
 }
 void StateMachineExampleGame::LoadScene(SceneName scene)
 {
@@ -67,7 +66,7 @@ void StateMachineExampleGame::LoadScene(SceneName scene)
 		m_pNewState = new MainMenuState(this);
 		break;
 	case SceneName::Gameplay:
-		m_pNewState = new GameplayState(this)
+		m_pNewState = new GameplayState(this);
 			break;
 
 		default: break;

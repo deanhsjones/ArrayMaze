@@ -29,6 +29,7 @@ constexpr int kEscape = 27;
 GameplayState::GameplayState(StateMachineExampleGame* pOwner)
 	: m_pOwner(pOwner)
 	, m_beatGame(false)
+    , m_skipFrameCount(0)
 {
 
 }
@@ -95,28 +96,28 @@ bool GameplayState::Update(bool processInput)
             HandleCollision(newPlayerX, newPlayerY);
         }
 
-        if (m_beatGame)
+
+    }
+    if (m_beatGame)
+    {
+        //skip a couple frames before going to the enxt scene
+        ++m_skipFrameCount;
+        if (m_skipFrameCount > kFramesToSkip)
         {
-            //skip a couple frames before going to the enxt scene
-            ++m_skipFrameCount;
-            if (m_skipFrameCount > kFramesToSkip)
-            {
-                //transition to main menu, if you beat game by hitting goal, player should be drawn over 
-                //the goal before playing sound and transitioning to main menu, not before the player appears to reach the goal spot
+            //transition to main menu, if you beat game by hitting goal, player should be drawn over 
+            //the goal before playing sound and transitioning to main menu, not before the player appears to reach the goal spot
 
-                m_skipFrameCount = 0;
-                AudioManager::GetInstance()->PlayWinSound();
-                m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
-            }
+            m_skipFrameCount = 0;
+            AudioManager::GetInstance()->PlayWinSound();
+            m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
         }
-
     }
     return false;
 
 
 }
 
-bool GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
+void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
 {
     bool isGameDone = false;
     PlaceableActor* collidedActor = m_level.UpdateActors(newPlayerX, newPlayerY);
