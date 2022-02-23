@@ -1,6 +1,8 @@
 #include "StateMachineExampleGame.h"
 #include "MainMenuState.h"
 #include "GameplayState.h"
+#include "HighScoreState.h"
+#include "SettingState.h"
 #include "Game.h"
 
 
@@ -68,6 +70,12 @@ void StateMachineExampleGame::LoadScene(SceneName scene)
 	case SceneName::Gameplay:
 		m_pNewState = new GameplayState(this);
 			break;
+	case SceneName::HighScore:
+		m_pNewState = new HighScoreState(this);
+		break;
+	case SceneName::Settings:
+		m_pNewState = new SettingState(this);
+		break;
 
 		default: break;
 	}

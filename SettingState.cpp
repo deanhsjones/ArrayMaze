@@ -46,11 +46,11 @@ void SettingState::Draw()
 	cout << "    " << kSound << ". Toggle Sound";
 	if (AudioManager::GetInstance()->IsSoundOn())
 	{
-		cout << "ON" << endl;
+		cout << " ON" << endl;
 	}
 	else
 	{
-		cout << "OFF" << endl;
+		cout << " OFF" << endl;
 	}
 	cout << "    " << kMainMenu << ". Back to Main Menu" << endl;
 }

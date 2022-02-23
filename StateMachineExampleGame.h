@@ -12,7 +12,13 @@ public:
     {
         None,
         MainMenu,
-        Gameplay
+        Gameplay, 
+        Settings,
+        HighScore, 
+        Lose, 
+        Win
+
+
     };
 
 private:
@@ -28,7 +34,7 @@ public:
     virtual bool UpdateCurrentState(bool processInput = true) override;
     virtual void DrawCurrentState() override;
     virtual void ChangeState(GameState* pNewState) override;
-    virtual bool Cleanup();
+    virtual void Cleanup();
     void LoadScene(SceneName scene);
 
 };
