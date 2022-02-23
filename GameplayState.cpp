@@ -12,6 +12,7 @@
 #include "Door.h"
 #include "Money.h"
 #include "Goal.h"
+#include "Utility.h"
 
 #include "StateMachineExampleGame.h"
 
@@ -108,8 +109,9 @@ bool GameplayState::Update(bool processInput)
             //the goal before playing sound and transitioning to main menu, not before the player appears to reach the goal spot
 
             m_skipFrameCount = 0;
+            Utility::WriteHighScore(m_player.GetMoney());
             AudioManager::GetInstance()->PlayWinSound();
-            m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+            m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Win);
         }
     }
     return false;
@@ -138,7 +140,7 @@ void GameplayState::HandleCollision(int newPlayerX, int newPlayerY)
             if (m_player.GetLives() < 0)
             {   //if no lives, play the lose sound and send back to main menu
                 AudioManager::GetInstance()->PlayLoseSound();
-                m_pOwner->LoadScene(StateMachineExampleGame::SceneName::MainMenu);
+                m_pOwner->LoadScene(StateMachineExampleGame::SceneName::Lose);
             }
 
             break;

@@ -3,6 +3,8 @@
 #include "GameplayState.h"
 #include "HighScoreState.h"
 #include "SettingState.h"
+#include "WinState.h"
+#include "LoseState.h"
 #include "Game.h"
 
 
@@ -75,6 +77,12 @@ void StateMachineExampleGame::LoadScene(SceneName scene)
 		break;
 	case SceneName::Settings:
 		m_pNewState = new SettingState(this);
+		break;
+	case SceneName::Win:
+		m_pNewState = new WinState(this);
+		break;
+	case SceneName::Lose:
+		m_pNewState = new LoseState(this);
 		break;
 
 		default: break;
